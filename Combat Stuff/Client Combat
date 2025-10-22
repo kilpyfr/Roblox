@@ -84,13 +84,10 @@ uis.InputEnded:Connect(function(inp, gpe)
 		if char.Humanoid.PlatformStand then return end
 		
 		
-		blockEvent:FireServer("Stop")
+		
+		blockEvent:FireServer("EndBlock")
 		blocking = false
-		for i,v in pairs(animator:GetPlayingAnimationTracks()) do
-			if v.Animation.AnimationId == "rbxassetid://75274270994166" then
-				v:Stop()
-			end
-		end
+		AnimationHandler.StopAnimation(char, {script.Animations.block.AnimationId})
 
 	end
 end)
@@ -122,7 +119,7 @@ uis.InputBegan:Connect(function(inp, gpe)
 		local anim = AnimationHandler.PlayAnimation(char, 1, script.Animations.block)
 		
 		blocking = true
-		blockEvent:FireServer("Start")
+		blockEvent:FireServer("StartBlock")
 	elseif inp.KeyCode == KeyBinds.Dash then
 		DashHandler.Dash(char)
 	end
@@ -170,11 +167,8 @@ failPrediction.OnClientEvent:Connect(function(Type)
 	
 	}
 	
-	for i,v in pairs(animator:GetPlayingAnimationTracks()) do
-		if table.find(RollBackAnimamations[Type], v.Animation.AnimationId) then
-			v:Stop()
-		end
-	end
+	AnimationHandler.StopAnimation(char, RollBackAnimamations[Type])
+
 	
 
 	
