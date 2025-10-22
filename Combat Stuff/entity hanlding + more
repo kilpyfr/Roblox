@@ -6,6 +6,7 @@ local RS = game:GetService("ReplicatedStorage")
 local HumanoidSettings = require(RS.HumanoidSettings)
 
 
+local failPrediction = RS.PredictionFail
 local entityRemote = RS.EntityHandling
 local vfxpart = RS.VFXPart
 local failPredict = RS.PredictionFail
@@ -50,8 +51,6 @@ local function getNextEntityId()
 	
 	return freeIds[1]
 end
-
-
 
 
 
@@ -108,7 +107,7 @@ end
 function TotalHandler.FullSync(plr)
 	
 		
-	entityRemote:FireClient(plr, "FullSync", nil, nil, ALL_ENTITY_IDS, ID_TO_CHARACTER)
+	entityRemote:FireClient(plr, "ClientSync", nil, nil, ALL_ENTITY_IDS, ID_TO_CHARACTER)
 	
 	
 	
@@ -124,16 +123,17 @@ function TotalHandler.GetCharacterFromId(id)
 	return workspace.Alive:FindFirstChild(ID_TO_CHARACTER[id])
 end
 
-function TotalHandler.NewEntity(char, id)
+function TotalHandler.AddEntity(char, id)
 	if not id then
 	id = getNextEntityId()
 		table.remove(freeIds, 1)
 	end
+	print(RunService:IsClient())
 	ALL_ENTITY_IDS[char.Name] = id
 	ID_TO_CHARACTER[id] = char.Name
 	
 	if RunService:IsServer() then
-	entityRemote:FireAllClients("Add", char, id)
+	entityRemote:FireAllClients("AddEntity", char, id)
 	end
 end
 
@@ -148,7 +148,7 @@ function TotalHandler.RemoveEntity(char)
 	
 	
 	if RunService:IsServer() then
-	entityRemote:FireAllClients("Remove", char)
+	entityRemote:FireAllClients("RemoveEntity", char)
 	end
 end
 
@@ -190,6 +190,11 @@ function TotalHandler.MinusBlockStamina(char, amount)
 end
 
 function TotalHandler.EndBlock(char)
+	
+	if not TotalHandler.CheckBlock(char) then return end
+	if (TotalHandler.CheckStun(char) or char:GetAttribute("State") == "M1") then return end
+	
+	
 	local index = blockIndexMap[char]
 	if not index then
 		return 
@@ -244,6 +249,10 @@ end
 
 
 function TotalHandler.StartBlock(char)
+	local blockingPlayer = game.Players:GetPlayerFromCharacter(char)
+	
+	if (TotalHandler.CheckStun(char) or  char:GetAttribute("State") == "M1") and blockingPlayer then failPrediction:FireClient(blockingPlayer, "Block") return end
+	
 	local index = blockIndexMap[char]
 	if not index then
 		index = #BlockingCharacters + 1
@@ -376,6 +385,7 @@ function TotalHandler.Knockback(char, kb, duration)
 	linearVelocity.VectorVelocity = kb
 	
 	Debris:AddItem(linearAtt, duration)
+	
 	task.spawn(function()
 		char.Humanoid.AutoRotate = false
 		task.wait(duration)
@@ -391,3 +401,6 @@ end
 
 
 return TotalHandler
+
+
+
