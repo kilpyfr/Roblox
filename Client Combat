@@ -1,0 +1,228 @@
+
+-- ╔════════════════════════════╗
+-- ║  ⚔️  CLIENT COMBAT CORE    ║
+-- ╚════════════════════════════╝
+
+local RS = game:GetService("ReplicatedStorage")
+local runSevice = game:GetService("RunService")
+local uis = game:GetService("UserInputService")
+local CAS = game:GetService("ContextActionService")
+local contentProvider = game:GetService("ContentProvider")
+
+
+local plr = game.Players.LocalPlayer
+local char = script.Parent
+local hum = char:WaitForChild("Humanoid")
+hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+
+local animator = hum:FindFirstChild("Animator")
+
+local m1Hitbox = RS.Hitboxes.M1Hitbox
+local entityRemote = RS.EntityHandling
+local delayRemote = RS.DelayCheck
+local m1Remote = RS.M1Remote
+local knockEvent = RS.knockback
+local blockEvent = RS.BlockEvent
+local VFXEvent = RS.VFXEvent
+local failPrediction = RS.PredictionFail
+
+local DashHandler = require(RS.ClientDashHandler)
+local Handler = require(RS.TotalHandler)
+local hitboxclass = require(RS.HitboxClass)
+local cacheHandler = require(RS.cacheHandler)
+local AnimationHandler = require(RS.AnimationManager)
+local M1Handler = require(script.ClientM1Handler)
+local VFXHandler = require(RS.VFXHandler)
+
+
+cacheHandler.Initialize(char)
+
+
+local blocking = false
+local fakeStunned = false
+
+
+
+local loadTable = {}
+for _,v in script:GetChildren() do
+	if v:IsA("Animation") then
+		table.insert(loadTable, v)
+	end
+end
+contentProvider:PreloadAsync(loadTable)
+
+
+
+
+
+local KeyBinds = {
+	Block = Enum.KeyCode.F,
+	M1 = Enum.UserInputType.MouseButton1,
+	Dash = Enum.KeyCode.Q,
+}
+
+
+
+
+local m1count = 1
+local m1deb = false
+local  m1updated = false
+local m1Repeating = false
+
+
+uis.InputEnded:Connect(function(inp, gpe)
+	if gpe then return end
+	
+	
+	if inp.UserInputType ==  KeyBinds.M1  then
+
+
+		m1Repeating = false
+
+
+	end
+	
+	if inp.KeyCode == KeyBinds.Block then
+		
+		if char.Humanoid.PlatformStand then return end
+		
+		
+		blockEvent:FireServer("Stop")
+		blocking = false
+		for i,v in pairs(animator:GetPlayingAnimationTracks()) do
+			if v.Animation.AnimationId == "rbxassetid://75274270994166" then
+				v:Stop()
+			end
+		end
+
+	end
+end)
+
+
+
+uis.InputBegan:Connect(function(inp, gpe)
+	if gpe then return end
+	
+	if inp.UserInputType ==  KeyBinds.M1  then
+		
+		m1Repeating = true
+
+		
+		while m1Repeating do
+			M1Handler.InitiateM1(char)
+			task.wait()
+		end
+		
+	end
+	
+	if inp.KeyCode == KeyBinds.Block then
+		if char:GetAttribute("State") == "Stunned" or char:GetAttribute("State") == "M1" or char.Humanoid.WalkSpeed == 0 then return end
+		if char.Humanoid.PlatformStand then return end
+		if char:GetAttribute("State") == "Blocking" then return end
+		
+		
+
+		local anim = AnimationHandler.PlayAnimation(char, 1, script.Animations.block)
+		
+		blocking = true
+		blockEvent:FireServer("Start")
+	elseif inp.KeyCode == KeyBinds.Dash then
+		DashHandler.Dash(char)
+	end
+end)
+
+delayRemote.OnClientEvent:Connect(function(p, t)
+	if p == plr then return end 
+	local delayt = workspace:GetServerTimeNow() - t
+	local m1ids = {"rbxassetid://102054305867773", "rbxassetid://132507322994031" , "rbxassetid://113738284517708"}
+	local con
+	 con = p.Character.Humanoid.Animator.AnimationPlayed:Connect(function(animtrack)
+		if table.find(m1ids, animtrack.Animation.AnimationId) then
+		animtrack.TimePosition += delayt
+		print("rollback applied in ".. tostring(delayt) .. " seconds")
+		con:Disconnect()
+		end
+	 end)
+	 
+	 
+	 print(delayt)
+end)
+
+m1Remote.OnClientEvent:Connect(function(num)
+	
+	AnimationHandler.PlayAnimation(char, 1, AnimationHandler.M1VICTIMANIMS[num])
+	
+	
+end)
+
+knockEvent.OnClientEvent:Connect(function(kb, duration)
+	
+	local char = plr.Character
+	Handler.Knockback(char, kb, duration)
+	
+	
+	
+	
+	
+end)
+
+failPrediction.OnClientEvent:Connect(function(Type)
+	
+	
+	
+	
+	if Type == "Block" then
+		blocking = false
+		for i,v in pairs(animator:GetPlayingAnimationTracks()) do
+			if v.Animation.AnimationId == script.block.AnimationId then
+				v:Stop()
+			end
+		end
+	elseif Type == "M1" then
+		local m1ids = {script.Animations.m1.AnimationId, script.Animations.m2.AnimationId , script.Animations.m3.AnimationId}
+		
+		for i,v in pairs(animator:GetPlayingAnimationTracks()) do
+			if table.find(m1ids, v.Animation.AnimationId) then
+				v:Stop()
+			end
+		end
+		
+	end
+	
+end)
+
+VFXEvent.OnClientEvent:Connect(function(Buffer)
+	local entityId = buffer.readu8(Buffer, 0)
+	local Type = buffer.readstring(Buffer, 1, buffer.len(Buffer) - 1)
+	local vfxchar = Handler.GetCharacterFromId(entityId)
+	
+	if Type == "Block"  then
+		VFXHandler.BlockVFX(vfxchar)
+	elseif Type == "BlockBreak" then
+		
+		VFXHandler.BlockBreakVFX(vfxchar)
+		
+	elseif Type == "Hit" then
+		VFXHandler.HitVFX(vfxchar)
+	
+			
+	end
+	
+end)
+
+entityRemote.OnClientEvent:Connect(function(callBack, echar, id, table1, table2)
+	if callBack == "Add" and game.Players:GetPlayerFromCharacter(echar) and game.Players:GetPlayerFromCharacter(echar) == plr then return end
+	
+	if callBack == "Add" then
+		Handler.NewEntity(echar, id)
+		
+	elseif callBack == "Remove" then
+		Handler.RemoveEntity(echar)
+	elseif callBack == "FullSync" then
+		Handler.ClientSync(table1, table2)
+	
+	end
+	
+	
+end)
