@@ -25,7 +25,7 @@ local blockingnpc = workspace.Alive:WaitForChild("BlockingRig")
 
 
 
-totalHandler.NewEntity(blockingnpc)
+totalHandler.AddEntity(blockingnpc)
 
 
 ragdoll.SetUpRagdollCollision(npc)
@@ -39,7 +39,7 @@ game.Players.PlayerAdded:Connect(function(plr)
 		ragdoll.SetUpRagdollCollision(char)
 		char.Humanoid.RequiresNeck = false
 		char.Parent = workspace.Alive
-		totalHandler.NewEntity(char)
+		totalHandler.AddEntity(char)
 		
 		totalHandler.FullSync(plr)
 	end)
@@ -60,6 +60,7 @@ m1Remote.OnServerEvent:Connect(function(plr, hitconnected, infoBuffer, num)
 	
 		local num = tonumber(buffer.readstring(infoBuffer, 0, 1))
 	local id = buffer.readu8(infoBuffer, 1)
+	
 	local predictedvictim = totalHandler.GetCharacterFromId(id)
 	
 	
@@ -87,19 +88,11 @@ end)
 blockEvent.OnServerEvent:Connect(function(plr, status)
 	local char = plr.Character
 	local hum = char.Humanoid
-	if status == 'Start' then
-		
-		if totalHandler.CheckStun(char) or  char:GetAttribute("State") == "M1" then failPrediction:FireClient(plr, "Block") return end
-		if char.Humanoid.PlatformStand then failPrediction:FireClient(plr, "Block")  return end
-		totalHandler.StartBlock(char)
+	
+	
+	totalHandler[status](char)
+	
 
-	elseif status == "Stop" then
-		if not totalHandler.CheckBlock(char) then return end
-		if char.Humanoid.PlatformStand then return end
-
-		totalHandler.EndBlock(char)
-		
-	end
 end)
 
 delayRemote.OnServerEvent:Connect(function(plr, t)
