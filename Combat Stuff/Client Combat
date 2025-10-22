@@ -13,8 +13,6 @@ local contentProvider = game:GetService("ContentProvider")
 local plr = game.Players.LocalPlayer
 local char = script.Parent
 local hum = char:WaitForChild("Humanoid")
-hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
 
 local animator = hum:FindFirstChild("Animator")
 
@@ -27,14 +25,14 @@ local blockEvent = RS.BlockEvent
 local VFXEvent = RS.VFXEvent
 local failPrediction = RS.PredictionFail
 
-local DashHandler = require(RS.ClientDashHandler)
+local DashHandler = require(script.ClientDashHandler)
 local Handler = require(RS.TotalHandler)
 local hitboxclass = require(RS.HitboxClass)
 local cacheHandler = require(RS.cacheHandler)
 local AnimationHandler = require(RS.AnimationManager)
 local M1Handler = require(script.ClientM1Handler)
 local VFXHandler = require(RS.VFXHandler)
-
+local HumanoidManager = require(RS.HumanoidSettings)
 
 cacheHandler.Initialize(char)
 
@@ -45,14 +43,12 @@ local fakeStunned = false
 
 
 local loadTable = {}
-for _,v in script:GetChildren() do
-	if v:IsA("Animation") then
+for _,v in script.Animations:GetChildren() do
 		table.insert(loadTable, v)
-	end
 end
 contentProvider:PreloadAsync(loadTable)
 
-
+HumanoidManager.SetUp(char)
 
 
 
@@ -111,7 +107,7 @@ uis.InputBegan:Connect(function(inp, gpe)
 		
 		while m1Repeating do
 			M1Handler.InitiateM1(char)
-			task.wait()
+			task.wait(0.1)
 		end
 		
 	end
@@ -168,27 +164,19 @@ knockEvent.OnClientEvent:Connect(function(kb, duration)
 end)
 
 failPrediction.OnClientEvent:Connect(function(Type)
+	local RollBackAnimamations = {
+		["Block"] = {script.Animations.m1.AnimationId, script.Animations.m2.AnimationId , script.Animations.m3.AnimationId},
+		["M1"] = {script.Animations.block.AnimationId},
 	
+	}
 	
-	
-	
-	if Type == "Block" then
-		blocking = false
-		for i,v in pairs(animator:GetPlayingAnimationTracks()) do
-			if v.Animation.AnimationId == script.block.AnimationId then
-				v:Stop()
-			end
+	for i,v in pairs(animator:GetPlayingAnimationTracks()) do
+		if table.find(RollBackAnimamations[Type], v.Animation.AnimationId) then
+			v:Stop()
 		end
-	elseif Type == "M1" then
-		local m1ids = {script.Animations.m1.AnimationId, script.Animations.m2.AnimationId , script.Animations.m3.AnimationId}
-		
-		for i,v in pairs(animator:GetPlayingAnimationTracks()) do
-			if table.find(m1ids, v.Animation.AnimationId) then
-				v:Stop()
-			end
-		end
-		
 	end
+	
+
 	
 end)
 
@@ -197,32 +185,21 @@ VFXEvent.OnClientEvent:Connect(function(Buffer)
 	local Type = buffer.readstring(Buffer, 1, buffer.len(Buffer) - 1)
 	local vfxchar = Handler.GetCharacterFromId(entityId)
 	
-	if Type == "Block"  then
-		VFXHandler.BlockVFX(vfxchar)
-	elseif Type == "BlockBreak" then
-		
-		VFXHandler.BlockBreakVFX(vfxchar)
-		
-	elseif Type == "Hit" then
-		VFXHandler.HitVFX(vfxchar)
-	
-			
-	end
+	VFXHandler[Type.."VFX"](vfxchar)
 	
 end)
 
 entityRemote.OnClientEvent:Connect(function(callBack, echar, id, table1, table2)
-	if callBack == "Add" and game.Players:GetPlayerFromCharacter(echar) and game.Players:GetPlayerFromCharacter(echar) == plr then return end
+	if callBack == "AddEntity" and game.Players:GetPlayerFromCharacter(echar) and game.Players:GetPlayerFromCharacter(echar) == plr then return end
 	
-	if callBack == "Add" then
-		Handler.NewEntity(echar, id)
-		
-	elseif callBack == "Remove" then
-		Handler.RemoveEntity(echar)
-	elseif callBack == "FullSync" then
+	if callBack == "ClientSync" then
 		Handler.ClientSync(table1, table2)
-	
+			return
 	end
+	
+	Handler[callBack](echar, id)
+	
+	
 	
 	
 end)
