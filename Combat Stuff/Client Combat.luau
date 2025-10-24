@@ -25,12 +25,12 @@ local blockEvent = RS.BlockEvent
 local VFXEvent = RS.VFXEvent
 local failPrediction = RS.PredictionFail
 
-local DashHandler = require(script.ClientDashHandler)
+
 local Handler = require(RS.TotalHandler)
 local hitboxclass = require(RS.HitboxClass)
 local cacheHandler = require(RS.cacheHandler)
 local AnimationHandler = require(RS.AnimationManager)
-local M1Handler = require(script.ClientM1Handler)
+local InputManager = require(script.InputHandler)
 local VFXHandler = require(RS.VFXHandler)
 local HumanoidManager = require(RS.HumanoidSettings)
 
@@ -61,80 +61,30 @@ local KeyBinds = {
 
 
 
-local m1count = 1
-local m1deb = false
-local  m1updated = false
-local m1Repeating = false
 
 
-uis.InputEnded:Connect(function(inp, gpe)
-	if gpe then return end
-	
-	
-	if inp.UserInputType ==  KeyBinds.M1  then
-
-
-		m1Repeating = false
-
-
-	end
-	
-	if inp.KeyCode == KeyBinds.Block then
-		
-		if char.Humanoid.PlatformStand then return end
-		
-		
-		
-		blockEvent:FireServer("EndBlock")
-		blocking = false
-		AnimationHandler.StopAnimation(char, {script.Animations.block.AnimationId})
-
-	end
-end)
+InputManager.SetUpInput("M1", char)
+InputManager.SetUpInput("Block", char)
+InputManager.SetUpInput("Dash", char)
 
 
 
-uis.InputBegan:Connect(function(inp, gpe)
-	if gpe then return end
-	
-	if inp.UserInputType ==  KeyBinds.M1  then
-		
-		m1Repeating = true
 
-		
-		while m1Repeating do
-			M1Handler.InitiateM1(char)
-			task.wait(0.1)
-		end
-		
-	end
-	
-	if inp.KeyCode == KeyBinds.Block then
-		if char:GetAttribute("State") == "Stunned" or char:GetAttribute("State") == "M1" or char.Humanoid.WalkSpeed == 0 then return end
-		if char.Humanoid.PlatformStand then return end
-		if char:GetAttribute("State") == "Blocking" then return end
-		
-		
 
-		local anim = AnimationHandler.PlayAnimation(char, 1, script.Animations.block)
-		
-		blocking = true
-		blockEvent:FireServer("StartBlock")
-	elseif inp.KeyCode == KeyBinds.Dash then
-		DashHandler.Dash(char)
-	end
-end)
+
+
 
 delayRemote.OnClientEvent:Connect(function(p, t)
 	if p == plr then return end 
 	local delayt = workspace:GetServerTimeNow() - t
-	local m1ids = {"rbxassetid://102054305867773", "rbxassetid://132507322994031" , "rbxassetid://113738284517708"}
+	local m1ids = script.Animations.M1Animations:GetChildren()
 	local con
 	 con = p.Character.Humanoid.Animator.AnimationPlayed:Connect(function(animtrack)
 		if table.find(m1ids, animtrack.Animation.AnimationId) then
+			
 		animtrack.TimePosition += delayt
-		print("rollback applied in ".. tostring(delayt) .. " seconds")
 		con:Disconnect()
+		
 		end
 	 end)
 	 
@@ -162,8 +112,8 @@ end)
 
 failPrediction.OnClientEvent:Connect(function(Type)
 	local RollBackAnimamations = {
-		["Block"] = {script.Animations.m1.AnimationId, script.Animations.m2.AnimationId , script.Animations.m3.AnimationId},
-		["M1"] = {script.Animations.block.AnimationId},
+		["Block"] = {script.Animations.block.AnimationId},
+		["M1"] = script.Animations.M1Animations:GetChildren(),
 	
 	}
 	
