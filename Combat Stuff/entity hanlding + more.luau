@@ -199,10 +199,10 @@ function TotalHandler.EndBlock(char)
 	if not index then
 		return 
 	end
-IsBlocking[index] = false
-if BlockStaminas[index] <= 0 then
-	BlockStaminas[index] = 3
-end
+		IsBlocking[index] = false
+		if BlockStaminas[index] <= 0 then
+		BlockStaminas[index] = 3
+		end
 
 BlockResetTimes[index] = time() + 2
 	TotalHandler.UpdateState(char, "Idle")
@@ -368,7 +368,17 @@ function TotalHandler.AddM1Character(char)
 	
 end
 
+function TotalHandler.CheckState(Char, Checks)
+	local State = Char:GetAttribute("State")
 
+	for i,v in type(Checks) == "table" and Checks or {Checks} do
+		if State == v then
+			return true
+		end
+	end
+
+	return false
+end
 
 function TotalHandler.Knockback(char, kb, duration)
 	local linearVelocity = Instance.new("LinearVelocity")
@@ -401,6 +411,7 @@ end
 
 
 return TotalHandler
+
 
 
 
