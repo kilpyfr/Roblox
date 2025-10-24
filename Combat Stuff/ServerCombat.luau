@@ -67,19 +67,8 @@ m1Remote.OnServerEvent:Connect(function(plr, hitconnected, infoBuffer, num)
 	ServerM1Handler.InitiateM1(plr, char, predictedvictim, num)
 		
 	else
-		totalHandler.ChangeM1Info(char, "Number", tonumber(num))
-		
-	
-	
-	
-		totalHandler.UpdateState(char, "M1")
-		task.wait(0.4)
 
-		if  char:GetAttribute("State") ~= "Stunned" and totalHandler.FetchM1Data(char, "Number") == tonumber(num) then
-			totalHandler.UpdateState(char, "Idle")
-		end
-		
-	
+		ServerM1Handler.PrepareM1(plr, char, tonumber(num))
 		
 	end
 end)
