@@ -3,7 +3,7 @@
 -- ║  ⚔️  CLIENT COMBAT CORE    ║
 -- ╚════════════════════════════╝
 
-local RS = game:GetService("ReplicatedStorage")
+local replicatedStorage = game:GetService("ReplicatedStorage")
 local runSevice = game:GetService("RunService")
 local uis = game:GetService("UserInputService")
 local CAS = game:GetService("ContextActionService")
@@ -15,23 +15,23 @@ local hum = char:WaitForChild("Humanoid")
 
 local animator = hum:FindFirstChild("Animator")
 
-local m1Hitbox = RS.Hitboxes.M1Hitbox
-local entityRemote = RS.EntityHandling
-local delayRemote = RS.DelayCheck
-local m1Remote = RS.M1Remote
-local knockEvent = RS.knockback
-local blockEvent = RS.BlockEvent
-local VFXEvent = RS.VFXEvent
-local failPrediction = RS.PredictionFail
+local m1Hitbox = replicatedStorage.Hitboxes.M1Hitbox
+local entityRemote = replicatedStorage.EntityHandling
+local delayRemote = replicatedStorage.DelayCheck
+local m1Remote = replicatedStorage.M1Remote
+local knockEvent = replicatedStorage.knockback
+local blockEvent = replicatedStorage.BlockEvent
+local VFXEvent = replicatedStorage.VFXEvent
+local failPrediction = replicatedStorage.PredictionFail
 
 
-local Handler = require(RS.TotalHandler)
-local hitboxclass = require(RS.HitboxClass)
-local cacheHandler = require(RS.cacheHandler)
-local AnimationHandler = require(RS.AnimationManager)
+local Handler = require(replicatedStorage.TotalHandler)
+local hitboxclass = require(replicatedStorage.HitboxClass)
+local cacheHandler = require(replicatedStorage.cacheHandler)
+local AnimationHandler = require(replicatedStorage.AnimationManager)
 local InputManager = require(script.InputHandler)
-local VFXHandler = require(RS.VFXHandler)
-local HumanoidManager = require(RS.HumanoidSettings)
+local VFXHandler = require(replicatedStorage.VFXHandler)
+local HumanoidManager = require(replicatedStorage.HumanoidSettings)
 
 cacheHandler.Initialize(char)
 
