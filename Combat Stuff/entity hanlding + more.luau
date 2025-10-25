@@ -12,7 +12,6 @@ local failPredict = RS.PredictionFail
 
 local TotalHandler = {}
 
-
 local ALL_ENTITY_IDS = {}
 local ID_TO_CHARACTER = {}
 
@@ -39,7 +38,6 @@ local IsBlocking = {}
 local BlockResetTimes = {}
 local blockIndexMap = {}
 
-
 local function getNextEntityId()
 	
 	return freeIds[1]
@@ -50,33 +48,26 @@ end
 RunService.Heartbeat:Connect(function()
 	
 	for i = #StunnedCharacters, 1, -1 do
-
 		if time() >= StunEndTime[i] then
 			
 			local char = StunnedCharacters[i]
-				if i < #StunnedCharacters then
-			local lastIndex = #StunnedCharacters
-			local lastChar = StunnedCharacters[lastIndex]
-			StunnedCharacters[i] = lastChar
-			StunEndTime[i] = StunEndTime[lastIndex] 
-			stunIndexMap[lastChar] = i	
-			
-			
-					StunnedCharacters[lastIndex] = nil
-					StunEndTime[lastIndex] = nil
-				else
-					StunnedCharacters[i] = nil
-					StunEndTime[i] = nil
-					
-					
-				end
+			if i < #StunnedCharacters then
+				local lastIndex = #StunnedCharacters
+				local lastChar = StunnedCharacters[lastIndex]
+				StunnedCharacters[i] = lastChar
+				StunEndTime[i] = StunEndTime[lastIndex] 
+				stunIndexMap[lastChar] = i	
+
+				StunnedCharacters[lastIndex] = nil
+				StunEndTime[lastIndex] = nil
+			else
+				StunnedCharacters[i] = nil
+				StunEndTime[i] = nil
+			end
 			
 			stunIndexMap[char] = nil
 			HumanoidSettings.ResetHumanoid(char)
-				TotalHandler.UpdateState(char, "Idle")
-		
-				
-			
+			TotalHandler.UpdateState(char, "Idle")
 		end
 	end
 	
@@ -385,6 +376,4 @@ function TotalHandler.UpdateState(char, state)
 	char:SetAttribute("State", state)
 end
 
-
 return TotalHandler
-
