@@ -11,7 +11,6 @@ local DashHandler = {}
 
 local DASHDEBOUNCE = 2
 
-
 local DEBOUNCE = false
 
 local DashAnimations = {
@@ -34,11 +33,7 @@ local DashData = {
 	["0,1"] = { anim = script.rightDash, dir =  0, force =  70, dur = 0.2 },
 }
 
-
 local function ApplyVelocity(char, duration, direction, force)
-	
-	
-	
 	local linearVelocity = Instance.new("LinearVelocity")
 	local linearAtt = Instance.new("Attachment")
 	local rootPart = char.HumanoidRootPart
@@ -60,11 +55,8 @@ local function ApplyVelocity(char, duration, direction, force)
 		end
 		HumanoidSettings.ResetHumanoid(char)
 	end)
-	
-	
 
 	game:GetService("Debris"):AddItem(linearAtt, duration)
-	
 end
 
 
@@ -73,6 +65,7 @@ function DashHandler.Dash(char)
 	if char.Humanoid.WalkSpeed == 0 then return end
 	if char:GetAttribute("State") == "Stunned" or char:GetAttribute("State") == "Blocking" or char:GetAttribute("State") == "M1" then return end
 	DEBOUNCE = true
+	
 	local Root: Part = char.HumanoidRootPart
 	local Humanoid: Humanoid = char.Humanoid
 	local initionLV: Vector3 = Root.CFrame.LookVector
@@ -99,16 +92,6 @@ function DashHandler.Dash(char)
 	
 	task.wait(DASHDEBOUNCE)
 	DEBOUNCE = false
-	
-	
-	
-	
-	
-	
 end
-
-
-
-
 
 return DashHandler
