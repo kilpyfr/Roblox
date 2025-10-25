@@ -9,14 +9,11 @@ local BlockHandler = require(script.Parent.ClientBlockHandler)
 
 local blockEvent = RS.BlockEvent
 
-
-
 local KeyBinds = {
 	Block = Enum.KeyCode.F,
 	M1 = Enum.UserInputType.MouseButton1,
 	Dash = Enum.KeyCode.Q,
 }
-
 
 local InputHandler = {}
 
@@ -25,15 +22,9 @@ local char
 local m1Repeating = false
 local blocking = false
 
-
-
-
 local InputFunctions = {
 	M1 = function(name, inputState, inputObject)
-	
-
 		m1Repeating = (inputState == Enum.UserInputState.Begin)
-
 
 		while m1Repeating do
 			M1Handler.InitiateM1(char)
@@ -42,8 +33,6 @@ local InputFunctions = {
 	end,
 	Block = function(name, inputState, inputObject)
 		if char.Humanoid.PlatformStand then return end
-			
-
 		blocking = (inputState == Enum.UserInputState.Begin)
 
 		BlockHandler.InitiateBlock(blocking, char)
@@ -55,24 +44,11 @@ local InputFunctions = {
 
 }
 
-
-
 function InputHandler.SetUpInput(Name, PassedChar)
 	if not InputFunctions[Name] then warn("Passed input name is not valid! Input Name: ".. Name) return end
-	
-	
 	char = PassedChar
-	
 	CAS:BindAction(Name, InputFunctions[Name], false, KeyBinds[Name])
-	
-	
 	
 end
 
-
-
-
-
-
 return InputHandler
-
