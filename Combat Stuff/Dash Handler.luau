@@ -1,11 +1,11 @@
-local RS = game:GetService("ReplicatedStorage")
-local AnimationHandler = require(RS.AnimationManager)
-local cacheHandler = require(RS.cacheHandler)
-local hitboxclass = require(RS.HitboxClass)
-local AllHandler = require(RS.TotalHandler)
-local VFXHandler = require(RS.VFXHandler)
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local AnimationHandler = require(replicatedStorage.AnimationManager)
+local cacheHandler = require(replicatedStorage.cacheHandler)
+local hitboxclass = require(replicatedStorage.HitboxClass)
+local AllHandler = require(replicatedStorage.TotalHandler)
+local VFXHandler = require(replicatedStorage.VFXHandler)
 
-local HumanoidSettings = require(RS.HumanoidSettings)
+local HumanoidSettings = require(replicatedStorage.HumanoidSettings)
 
 local DashHandler = {}
 
