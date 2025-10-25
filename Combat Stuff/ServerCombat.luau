@@ -2,30 +2,23 @@
 -- ║  ⚔️  SERVER COMBAT CORE    ║
 -- ╚════════════════════════════╝
 
-local RP = game:GetService("ReplicatedStorage")
+local replicatedStorage = game:GetService("ReplicatedStorage")
 
-
-local ragdoll = require(RP.Ragdoll)
-local totalHandler = require(RP.TotalHandler)
+local totalHandler = require(replicatedStorage.TotalHandler)
 local ServerM1Handler = require(game:GetService("ServerStorage").ServerM1Handler)
 
-local delayRemote = RP.DelayCheck
-local m1Remote = RP.M1Remote
-local entityremote = RP.EntityHandling
-local knockEvent = RP:FindFirstChild("knockback")
-local blockEvent = RP:FindFirstChild("BlockEvent")
-local failPrediction = RP:FindFirstChild("PredictionFail")
-local VFXEvent = RP:FindFirstChild("VFXEvent")
-local ragdollPredict = RP.RagdollPredict
+local delayRemote = replicatedStorage.DelayCheck
+local m1Remote = replicatedStorage.M1Remote
+local entityremote = replicatedStorage.EntityHandling
+local knockEvent = replicatedStorage:FindFirstChild("knockback")
+local blockEvent = replicatedStorage:FindFirstChild("BlockEvent")
+local failPrediction = replicatedStorage:FindFirstChild("PredictionFail")
+local VFXEvent = replicatedStorage:FindFirstChild("VFXEvent")
 
 local npc = workspace.Alive:WaitForChild("Rig")
 local blockingnpc = workspace.Alive:WaitForChild("BlockingRig")
 
 totalHandler.AddEntity(blockingnpc)
-
-
-ragdoll.SetUpRagdollCollision(npc)
-ragdoll.SetUpRagdollCollision(blockingnpc)
 
 game.Players.PlayerAdded:Connect(function(plr)
 	plr.CharacterAdded:Connect(function(char)
