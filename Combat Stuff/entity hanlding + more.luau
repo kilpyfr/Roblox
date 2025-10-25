@@ -1,20 +1,19 @@
 local RunService = game:GetService("RunService")
 local httpService = game:GetService("HttpService")
 local Debris = game:GetService("Debris")
-local RS = game:GetService("ReplicatedStorage")
+local replicatedStorage = game:GetService("ReplicatedStorage")
 
-local HumanoidSettings = require(RS.HumanoidSettings)
+local HumanoidSettings = require(replicatedStorage.HumanoidSettings)
 
-local failPrediction = RS.PredictionFail
-local entityRemote = RS.EntityHandling
-local vfxpart = RS.VFXPart
-local failPredict = RS.PredictionFail
+local failPrediction = replicatedStorage.PredictionFail
+local entityRemote = replicatedStorage.EntityHandling
+local vfxpart = replicatedStorage.VFXPart
+local failPredict = replicatedStorage.PredictionFail
 
 local TotalHandler = {}
 
 local ALL_ENTITY_IDS = {}
 local ID_TO_CHARACTER = {}
-
 
 local freeIds = {}
 
