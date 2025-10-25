@@ -109,8 +109,8 @@ entityRemote.OnClientEvent:Connect(function(callBack, echar, id, table1, table2)
 	if callBack == "AddEntity" and game.Players:GetPlayerFromCharacter(echar) and game.Players:GetPlayerFromCharacter(echar) == plr then return end
 	
 	if callBack == "ClientSync" then
-		Handler.ClientSync(table1, table2)
-			return
+	Handler.ClientSync(table1, table2)
+	return
 	end
 	
 	Handler[callBack](echar, id)
