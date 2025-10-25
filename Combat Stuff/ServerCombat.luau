@@ -36,8 +36,6 @@ ragdoll.SetUpRagdollCollision(blockingnpc)
 
 game.Players.PlayerAdded:Connect(function(plr)
 	plr.CharacterAdded:Connect(function(char)
-		ragdoll.SetUpRagdollCollision(char)
-		char.Humanoid.RequiresNeck = false
 		char.Parent = workspace.Alive
 		totalHandler.AddEntity(char)
 		
