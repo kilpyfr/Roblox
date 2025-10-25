@@ -1,13 +1,13 @@
 local CAS = game:GetService("ContextActionService")
-local RS = game:GetService("ReplicatedStorage")
+local replicatedStorage = game:GetService("ReplicatedStorage")
 
 local DashHandler = require(script.Parent.ClientDashHandler)
 local M1Handler = require(script.Parent.ClientM1Handler)
-local AnimationHandler = require(RS.AnimationManager)
-local TotalHandler = require(RS.TotalHandler)
+local AnimationHandler = require(replicatedStorage.AnimationManager)
+local TotalHandler = require(replicatedStorage.TotalHandler)
 local BlockHandler = require(script.Parent.ClientBlockHandler)
 
-local blockEvent = RS.BlockEvent
+local blockEvent = replicatedStorage.BlockEvent
 
 local KeyBinds = {
 	Block = Enum.KeyCode.F,
@@ -40,7 +40,6 @@ local InputFunctions = {
 	Dash = function(name, inputState, inputObject)
 		DashHandler.Dash(char)
 	end,
-
 
 }
 
