@@ -5,12 +5,10 @@ local RS = game:GetService("ReplicatedStorage")
 
 local HumanoidSettings = require(RS.HumanoidSettings)
 
-
 local failPrediction = RS.PredictionFail
 local entityRemote = RS.EntityHandling
 local vfxpart = RS.VFXPart
 local failPredict = RS.PredictionFail
-
 
 local TotalHandler = {}
 
@@ -29,8 +27,6 @@ local StunnedCharacters = {}
 local StunEndTime = {}
 local stunIndexMap = {}
 
-
-
 local M1Character = {}
 local M1Debounce = {}
 local M1Number = {}
@@ -45,9 +41,6 @@ local blockIndexMap = {}
 
 
 local function getNextEntityId()
-	
-	
-	
 	
 	return freeIds[1]
 end
@@ -105,12 +98,8 @@ function TotalHandler.ClientSync(table1,table2)
 end
 
 function TotalHandler.FullSync(plr)
-	
 		
 	entityRemote:FireClient(plr, "ClientSync", nil, nil, ALL_ENTITY_IDS, ID_TO_CHARACTER)
-	
-	
-	
 end
 
 function TotalHandler.GetIdFromCharacter(char)
@@ -152,12 +141,8 @@ function TotalHandler.RemoveEntity(char)
 	end
 end
 
-
-
-
 function TotalHandler.CheckBlock(char)
 	local index = blockIndexMap[char]
-	
 	
 	return IsBlocking[index]
 end
@@ -182,7 +167,6 @@ function TotalHandler.MinusBlockStamina(char, amount)
 		end
 	end
 	
-	
 	local BlockGui = char:FindFirstChild("BlockStaminaGui")
 	if BlockGui then
 		BlockGui.BlockStaminaFill.Size = UDim2.new(BlockStaminas[index]/10, 0, 0.051, 0)
@@ -190,7 +174,6 @@ function TotalHandler.MinusBlockStamina(char, amount)
 end
 
 function TotalHandler.EndBlock(char)
-	
 	if not TotalHandler.CheckBlock(char) then return end
 	if (TotalHandler.CheckStun(char) or char:GetAttribute("State") == "M1") then return end
 	
@@ -204,7 +187,7 @@ function TotalHandler.EndBlock(char)
 		BlockStaminas[index] = 3
 		end
 
-BlockResetTimes[index] = time() + 2
+	BlockResetTimes[index] = time() + 2
 	TotalHandler.UpdateState(char, "Idle")
 	HumanoidSettings.ResetHumanoid(char)
 
@@ -214,7 +197,6 @@ BlockResetTimes[index] = time() + 2
 	end
 
 end
-
 
 function TotalHandler.DestroyBlock(char)
 	local index = blockIndexMap[char]
@@ -239,14 +221,12 @@ function TotalHandler.DestroyBlock(char)
 	blockIndexMap[char] = nil
 --	TotalHandler.UpdateState(char, "Idle")
 	
-	
 	local BlockGui = char:FindFirstChild("BlockStaminaGui")
 	if BlockGui then
 		BlockGui:Destroy()
 	end
 	
 end
-
 
 function TotalHandler.StartBlock(char)
 	local blockingPlayer = game.Players:GetPlayerFromCharacter(char)
@@ -276,11 +256,8 @@ function TotalHandler.StartBlock(char)
 	BlockGui.BlockStaminaFill.Size = UDim2.new(BlockStaminas[index]/10, 0, 0.051, 0)
 end
 
-
 function TotalHandler.CheckStun(char)
 	local index = stunIndexMap[char]
-	
-
 	
 	return StunnedCharacters[index]
 end
@@ -353,7 +330,6 @@ function TotalHandler.ChangeM1Info(char, change, changevalue)
 		M1Number[index] = changevalue
 	end
 	
-	
 end
 
 
@@ -411,7 +387,4 @@ end
 
 
 return TotalHandler
-
-
-
 
