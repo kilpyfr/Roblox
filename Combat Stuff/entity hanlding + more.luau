@@ -36,14 +36,14 @@ local BlockStaminas = {}
 local IsBlocking = {}
 local BlockResetTimes = {}
 local blockIndexMap = {}
+-- some may call this over optimization and i kind of agree to be honest
 
 local function getNextEntityId()
-	
 	return freeIds[1]
 end
 
 
-
+-- Stun Update Loop
 RunService.Heartbeat:Connect(function()
 	
 	for i = #StunnedCharacters, 1, -1 do
@@ -86,7 +86,7 @@ function TotalHandler.ClientSync(table1,table2)
 	ALL_ENTITY_IDS = table1
 	ID_TO_CHARACTER = table2
 end
-
+-- Entity Id Management
 function TotalHandler.FullSync(plr)
 		
 	entityRemote:FireClient(plr, "ClientSync", nil, nil, ALL_ENTITY_IDS, ID_TO_CHARACTER)
@@ -130,7 +130,7 @@ function TotalHandler.RemoveEntity(char)
 	entityRemote:FireAllClients("RemoveEntity", char)
 	end
 end
-
+-- Combat Management
 function TotalHandler.CheckBlock(char)
 	local index = blockIndexMap[char]
 	
@@ -370,7 +370,7 @@ function TotalHandler.Knockback(char, kb, duration)
 end
 
 
-
+--Attribute updates (mainly for client replication)
 function TotalHandler.UpdateState(char, state)
 	char:SetAttribute("State", state)
 end
