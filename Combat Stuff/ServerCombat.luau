@@ -1,6 +1,4 @@
--- ╔════════════════════════════╗
--- ║  ⚔️  SERVER COMBAT CORE    ║
--- ╚════════════════════════════╝
+
 
 local replicatedStorage = game:GetService("ReplicatedStorage")
 
