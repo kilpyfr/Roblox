@@ -1,7 +1,4 @@
 
--- ╔════════════════════════════╗
--- ║  ⚔️  CLIENT COMBAT CORE    ║
--- ╚════════════════════════════╝
 
 local replicatedStorage = game:GetService("ReplicatedStorage")
 local runSevice = game:GetService("RunService")
